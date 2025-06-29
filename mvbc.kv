@@ -1,0 +1,436 @@
+#: import CardTransition kivy.uix.screenmanager.CardTransition
+
+#Creates a screen manager reference in the kv file and sets LoginScreen, MainScreen, and RegisterScreen
+#as the 3 screens under it as well as assigning IDs to various parts
+MyScreenManager:
+    #Changes the default screen transition to a Card Transition
+    transition: CardTransition()
+    #Creates a reference to which the object properties defined in the py file will map themselves
+    username_input_box: screen1.usernameinput
+    password_input_box: screen1.passwordinput
+    username_register_box: screen3.usernameregister
+    password_register_box: screen3.passwordregister
+    LoginScreen:
+        id:screen1
+    MainScreen:
+        id:screen2
+    RegisterScreen:
+        id:screen3
+
+#Specifies the elements under LoginScreen as well as the layouts
+<LoginScreen>:
+    #Creates a reference to which the object properties defined in the py file will map themselves
+    usernameinput : usernameinput
+    passwordinput : passwordinput
+    #Assigns a name to the screen by which it can be referenced
+    name: 'loginArea'
+    #Creates a canvas (the space on which to add elements) and sets a background of a black rectangle (the .before
+    #means that the specified elements canvas will be put in first, later elements will then follow)
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        BoxLayout:
+            #Uses density independent pixels to define the separation between each element
+            spacing: "15dp"
+            size_hint: 0.5, 0.5
+            orientation: "vertical"
+            MDLabel:
+                markup: True
+                text: "[b][size=20]Login with an existing account[/size][/b]"
+                color: app.theme_cls.accent_color
+            MDLabel:
+                text: "Enter your username:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: usernameinput
+                normal_color: app.theme_cls.accent_color
+            MDLabel:
+                text: "Enter your password:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: passwordinput
+                password: True
+            MDRectangleFlatButton:
+                color: app.theme_cls.accent_color
+                text: 'Log In'
+                #When this button is pressed the VerifyLogin function is called and text in the input boxes is cleared
+                on_press:
+                    root.VerifyLogin()
+                    usernameinput.text = ""
+                    passwordinput.text = ""
+            MDRectangleFlatButton:
+                color: app.theme_cls.accent_color
+                text: 'Register'
+                #When this button is pressed the screen changes to the register screen
+                on_release:
+                    root.manager.current = 'registerArea'
+
+<RegisterScreen>:
+    #Creates a reference to which the object properties defined in the py file will map themselves
+    usernameregister:usernameregister
+    passwordregister:passwordregister
+    #Assigns a name to the screen by which it can be referenced
+    name: "registerArea"
+    #Creates a canvas (the space on which to add elements) and sets a background of a black rectangle (the .before
+    #means that the specified elements canvas will be put in first, later elements will then follow)
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    AnchorLayout:
+        anchor_x: "center"
+        anchor_y: "center"
+        BoxLayout:
+            #Uses density independent pixels to define the separation between each element
+            spacing: "15dp"
+            size_hint: 0.5, 0.5
+            orientation: "vertical"
+            MDLabel:
+                markup: True
+                text: "[b][size=20]Create a new account[/size][/b]"
+                color: app.theme_cls.accent_color
+            MDLabel:
+                text: "Enter a username:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: usernameregister
+                line_color_normal: app.theme_cls.accent_color
+            MDLabel:
+                text: "Enter a password:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: passwordregister
+                line_color_normal: app.theme_cls.accent_color
+            MDRectangleFlatButton:
+                text: 'Save'
+                #When this button is pressed the RegisterUser function is called
+                on_release: root.RegisterUser()
+            MDRectangleFlatButton:
+                text: 'Back'
+                on_press:
+                    #When this button is pressed the screen returns to the login screen and text in the input boxes is
+                    #cleared
+                    root.manager.current = 'loginArea'
+                    usernameregister.text = ""
+                    passwordregister.text = ""
+
+#Specifies the elements under MainScreen
+<MainScreen>:
+    id: mainscreenid
+    #Creates a canvas (the space on which to add elements) and sets a background of a black rectangle (the .before
+    #means that the specified elements canvas will be put in first, later elements will then follow)
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    #Assigns a name to the screen by which it can be referenced
+    name: 'mainArea'
+    #Creates a nested manager to display a certain menu when the relevant button is pressed
+    SubscreenManager:
+        id: SubscreenManagement
+        ShootingProfilesSubscreen:
+            id: ShootingProfilesSubscreenID
+        SettingsSubscreen:
+            id: SettingsSubscreennID
+        AdjustmentsValueInputSubscreen:
+            id: AdjustmentsValueInputSubscreenID
+    #The main menu functionality
+    MDFloatingActionButtonSpeedDial:
+        #Takes data provided as a dictionary under the app class definition in the py file
+        data: app.data
+        root_button_anim: True
+        callback: app.callbackMainMenu
+
+#Changes the size and colour of the sub buttons in the drop down menu for the shooting profiles subscreen
+<SpinnerOption>:
+    size_hint: 1, None
+    height: "30dp"
+    background_color: 1,0.5,0.5,0.8
+    color: app.theme_cls.primary_color
+
+#Defines the content of Shooting Profiles Subscreen as well as assigning it an ID and name to reference it
+<ShootingProfilesSubscreen>:
+
+
+    dropdownMenu:dropdownMenu
+    profileSaveName:profileSaveName
+
+    name: "SPSubscreen"
+    FloatLayout:
+        #Sets the size of the float layout to the size of the window
+        size: root.width, root.height
+        #Initialises the spinner widget and sets its parameters
+        Spinner:
+            id: dropdownMenu
+            size_hint: 1,0.1
+            background_color: app.theme_cls.primary_color
+            pos_hint: {"top":1}
+            color: app.theme_cls.accent_color
+            #The text that will be displayed on the spinner initially
+            text: "Load a saved profile"
+            #The text on each of the buttons inside the spinner. Initialised as an empty list
+            values: []
+            #When one of the options is selected in dropdown menu, send the text of the option selected to the
+            #procedure LoadProfileContent
+            on_text: root.LoadProfileContent(dropdownMenu.text)
+    BoxLayout:
+        size_hint: 0.8, None
+        #Uses density independent pixels to set the height of the box layout. This means it will cover the same
+        #proportion of space on the screen regardless of the resolution
+        height: "100dp"
+        orientation: "horizontal"
+        spacing: 5
+        pos: 0, 0
+        padding: [10, 10, 10, 10]
+        MDRectangleFlatButton:
+            text: "Save current inputs as:"
+            on_press: root.SaveNewProfile()
+        MDTextFieldRect:
+            id: profileSaveName
+            size_hint: 1, None
+            height: "40dp"
+
+
+
+#Defines the content of Settings Subscreen as well as assigning it an ID and name to reference it
+<SettingsSubscreen>:
+
+    #NOTE in this case, the word before 'Toggle' in the ID is referring to the fraction. e.g 'eighthToggle' means the
+    #toggle for 1/8
+    #Maps the object properties from the .py file to the IDs of individual widgets
+    tenthToggle:tenthToggle
+    eighthToggle:eighthToggle
+    quarterToggle:quarterToggle
+    halfToggle:halfToggle
+
+    name: "SSubscreen"
+    #Puts all the widgets on this subscreen in a float layout in order to place them in the top left corner
+    FloatLayout:
+        #Defines the box layout parameters and content
+        BoxLayout:
+            size_hint: 1, 0.2
+            pos_hint: {'x': 0.0, 'y': 0.75}
+            orientation: "horizontal"
+            MDLabel:
+                text: "MOA/MILRAD click increments:"
+                color: app.theme_cls.primary_color
+            BoxLayout:
+                orientation: "vertical"
+                MyToggleButton:
+                    id: tenthToggle
+                    color: app.theme_cls.accent_color
+                    text: "1/10"
+                    #Groups the toggle buttons so that only 1 can be active at any time
+                    group : 'incrementToggleButtons'
+                    #Sets the colours for the normal and activated states
+                    font_color_normal: app.theme_cls.primary_color
+                    font_color_down: app.theme_cls.accent_color
+                    on_press: root.UpdateClickValue()
+                MyToggleButton:
+                    id: eighthToggle
+                    color: app.theme_cls.accent_color
+                    text: "1/8"
+                    group : 'incrementToggleButtons'
+                    font_color_normal: app.theme_cls.primary_color
+                    font_color_down: app.theme_cls.accent_color
+                    on_press: root.UpdateClickValue()
+                MyToggleButton:
+                    id: quarterToggle
+                    color: app.theme_cls.accent_color
+                    text: "1/4"
+                    group : 'incrementToggleButtons'
+                    font_color_normal: app.theme_cls.primary_color
+                    font_color_down: app.theme_cls.accent_color
+                    on_press: root.UpdateClickValue()
+                MyToggleButton:
+                    id: halfToggle
+                    color: app.theme_cls.accent_color
+                    text: "1/2"
+                    group : 'incrementToggleButtons'
+                    font_color_normal: app.theme_cls.primary_color
+                    font_color_down: app.theme_cls.accent_color
+                    on_press:
+                        root.UpdateClickValue()
+
+#Defines the content of Adjustments/ValueInput Subscreen as well as assigning it an ID and name to reference it
+<AdjustmentsValueInputSubscreen>:
+
+    #Maps the object properties from the .py file to the IDs of individual widgets
+    massInput:massInput
+    calibreInput:calibreInput
+    bcInput:bcInput
+    velocityInput:velocityInput
+    distanceInput:distanceInput
+    temperatureInput:temperatureInput
+    rhInput:rhInput
+    moaAdjustment:moaAdjustment
+    milradAdjustment:milradAdjustment
+
+    name: "AVISubscreen"
+    GridLayout:
+        # Sets 1 column
+        cols: 1
+        # Adds a little space between the edges of the screen and between widgets
+        padding: [10, 10, 10, 100]
+        spacing: [5]
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Bullet mass in grains:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: massInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Bullet calibre in mm:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: calibreInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Ballistic coefficient of the bullet:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: bcInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Muzzle velocity in metres per second:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: velocityInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Distance to the target in metres:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: distanceInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Temperature in degrees Celsius:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: temperatureInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+        BoxLayout:
+            orientation: 'horizontal'
+            MDLabel:
+                text: "Relative humidity in %:"
+                color: app.theme_cls.primary_color
+            MDTextFieldRect:
+                id: rhInput
+                line_color_normal: app.theme_cls.accent_color
+                size_hint: None, None
+                height: "30dp"
+                width: "75dp"
+                pos_hint:{"center_y":0.5}
+                input_filter: "float"
+    BoxLayout:
+        size_hint: 0.8, None
+        height: "100dp"
+        orientation: "horizontal"
+        spacing: 5
+        pos: 0, 0
+        padding: [10, 10, 10, 10]
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                orientation: "horizontal"
+                MDLabel:
+                    text: "MOA adjustment (clicks):"
+                    font_size: 11
+                    color: app.theme_cls.accent_color
+                MDTextFieldRect:
+                    #Makes this text box read only. This is required to display the adjustment value
+                    readonly: True
+                    id: moaAdjustment
+                    line_color_normal: app.theme_cls.accent_color
+                    size_hint: None, None
+                    height: "30dp"
+                    width: "75dp"
+                    pos_hint:{"center_y":0.5}
+            BoxLayout:
+                orientation: "horizontal"
+                MDLabel:
+                    text: "MILRAD adjustment (clicks):"
+                    font_size: 11
+                    color: app.theme_cls.accent_color
+                MDTextFieldRect:
+                    #Makes this text box read only. This is required to display the adjustment value
+                    readonly: True
+                    id: milradAdjustment
+                    line_color_normal: app.theme_cls.accent_color
+                    size_hint: None, None
+                    height: "30dp"
+                    width: "75dp"
+                    pos_hint:{"center_y":0.5}
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                orientation: "horizontal"
+            MDRectangleFlatButton:
+                id: envFetchButton
+                color: app.theme_cls.accent_color
+                text: "Get environmental values"
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+                on_press: root.EnvironmentalValues()
+            MDRectangleFlatButton:
+                id: recalculateButton
+                color: app.theme_cls.accent_color
+                text: "(Re)calculate"
+                text_size: self.size
+                halign: 'center'
+                valign: 'center'
+                on_press: root.CalculateAdjustment()
+

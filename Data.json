@@ -1,0 +1,9 @@
+{
+  "UserAccounts": [
+    {
+      "Username": "AdminLogin",
+      "Password": "AdminPassword",
+      "ShootingProfiles": []
+    }
+  ]
+}
